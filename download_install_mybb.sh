@@ -4,36 +4,31 @@
 # Environment variables.
  echo " Parameters: email: $MYBB_ADMINEMAIL domainname: $MYBB_DOMAINNAME dbname: $MYBB_DBNAME  dbuser: $MYBB_DBUSERNAME dbpwd: $MYBB_DBPASSWORD dbhostname: $MYBB_DBHOSTNAME  dbport: $MYBB_DBPORT" >> /tmp/mybb_install.log
 
-# Config
-CONFIG="./mybb-config"
-SOURCE="./mybb-source"
+wget https://resources.mybb.com/downloads/mybb_1810.zip -O /tmp/mybb_1810.zip
+unzip /tmp/mybb_1810.zip "Upload/*" -d /tmp
+mv /tmp/Upload/* /var/www/html/
+rm -rf /tmp/mybb_1810.zip /tmp/Upload
+
+
 TARGET="/var/www/html"
 
 # Clean-up.
 rm -rf "$TARGET"/*
-cp -r "$SOURCE"/* "$TARGET"/
+
 
 # Prepare and copy dynamic configuration files.
-sed -e "s/MYBB_ADMINEMAIL/${MYBB_ADMINEMAIL}/g" \
-    -e "s/MYBB_DOMAINNAME/${MYBB_DOMAINNAME}/g" \
-    "${CONFIG}/settings.php" > "${TARGET}/inc/settings.php"
+sed -e "s/MYBB_ADMINEMAIL/${MYBB_ADMINEMAIL}/g" -e "s/MYBB_DOMAINNAME/${MYBB_DOMAINNAME}/g" "settings.php" > "${TARGET}/inc/settings.php"
 
-sed -e "s/MYBB_DBNAME/${MYBB_DBNAME}/g" \
-    -e "s/MYBB_DBUSERNAME/${MYBB_DBUSERNAME}/g" \
-    -e "s/MYBB_DBPASSWORD/${MYBB_DBPASSWORD}/g" \
-    -e "s/MYBB_DBHOSTNAME/${MYBB_DBHOSTNAME}/g" \
-    -e "s/MYBB_DBPORT/${MYBB_DBPORT}/g" \
-    "${CONFIG}/config.php" > "${TARGET}/inc/config.php"
+sed -e "s/MYBB_DBNAME/${MYBB_DBNAME}/g" -e "s/MYBB_DBUSERNAME/${MYBB_DBUSERNAME}/g" -e "s/MYBB_DBPASSWORD/${MYBB_DBPASSWORD}/g" \
+    -e "s/MYBB_DBHOSTNAME/${MYBB_DBHOSTNAME}/g" -e "s/MYBB_DBPORT/${MYBB_DBPORT}/g" "config.php" > "${TARGET}/inc/config.php"
 
 # Initialize database.
-sed -e "s/MYBB_ADMINEMAIL/${MYBB_ADMINEMAIL}/g" \
-    -e "s/MYBB_DOMAINNAME/${MYBB_DOMAINNAME}/g" \
-    "${CONFIG}/mybb.sql" | mysql \
+sed -e "s/MYBB_ADMINEMAIL/${MYBB_ADMINEMAIL}/g" -e "s/MYBB_DOMAINNAME/${MYBB_DOMAINNAME}/g" "mybb.sql" | mysql \
     --user="$MYBB_DBUSERNAME" \
     --password="$MYBB_DBPASSWORD" \
     --host="$MYBB_DBHOSTNAME" \
     --port="$MYBB_DBPORT" \
-    --database="$MYBB_DBNAME" || echo "WE ASSUME DATA ALREADY EXISTS!"
+    --database="$MYBB_DBNAME" || echo "Mybb Database created success."
 	
 	
 # Set proper ownership and permissions.
