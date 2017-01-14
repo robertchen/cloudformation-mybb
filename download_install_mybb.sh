@@ -4,16 +4,18 @@
 # Environment variables.
  echo " Parameters: email: $MYBB_ADMINEMAIL domainname: $MYBB_DOMAINNAME dbname: $MYBB_DBNAME  dbuser: $MYBB_DBUSERNAME dbpwd: $MYBB_DBPASSWORD dbhostname: $MYBB_DBHOSTNAME  dbport: $MYBB_DBPORT" >> /tmp/mybb_install.log
 
+TARGET="/var/www/html"
+
+# Clean-up.
+rm -rf "$TARGET"/*
+
 wget https://resources.mybb.com/downloads/mybb_1810.zip -O /tmp/mybb_1810.zip
 unzip /tmp/mybb_1810.zip "Upload/*" -d /tmp
 mv /tmp/Upload/* /var/www/html/
 rm -rf /tmp/mybb_1810.zip /tmp/Upload
 
 
-TARGET="/var/www/html"
 
-# Clean-up.
-rm -rf "$TARGET"/*
 
 
 # Prepare and copy dynamic configuration files.
